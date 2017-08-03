@@ -24,6 +24,17 @@ You can also adjust `-listener`, `-no-listener`, `-visitor`, `-no-visitor` optio
     antlr4GenListener in Antlr4 := true // default: true
 
     antlr4GenVisitor in Antlr4 := false // default: false
+Set output directory for generated java classes (eg parser):
+
+
+    default directory: projectpath/target/resolution-cache/scala_{ver}/src_managed/main
+
+
+    antlr4OutputDir in Antlr4 := new File("/yourprojectpath/where/You/want/")
+
+And if You want put it to projectpath/src/main/java:
+
+    antlr4OutputDir in Antlr4 := (javaSource in Compile).value 
  
 ## License
 

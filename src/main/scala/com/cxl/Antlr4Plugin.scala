@@ -1,4 +1,4 @@
-package com.simplytyped
+package com.cxl
 
 import sbt._
 import Keys._
@@ -13,6 +13,7 @@ object Antlr4Plugin extends Plugin {
   val antlr4PackageName = SettingKey[Option[String]]("Name of the package for generated classes")
   val antlr4GenListener = SettingKey[Boolean]("Generate listener")
   val antlr4GenVisitor = SettingKey[Boolean]("Generate visitor")
+  val antlr4OutputDir = SettingKey[File]("antlr4-output")
 
   private val antlr4BuildDependency = SettingKey[ModuleID]("Build dependency required for parsing grammars, scoped to plugin")
 
@@ -21,7 +22,7 @@ object Antlr4Plugin extends Plugin {
       in : Set[File] =>
         runAntlr(
           srcFiles = in,
-          targetBaseDir = (javaSource in Antlr4).value,
+          targetBaseDir = (antlr4OutputDir in Antlr4).value,
           classpath = (managedClasspath in Antlr4).value.files,
           log = streams.value.log,
           packageName = (antlr4PackageName in Antlr4).value,
@@ -33,13 +34,13 @@ object Antlr4Plugin extends Plugin {
   }
 
   def runAntlr(
-      srcFiles: Set[File],
-      targetBaseDir: File,
-      classpath: Seq[File],
-      log: Logger,
-      packageName: Option[String],
-      listenerOpt: Boolean,
-      visitorOpt: Boolean) = {
+                srcFiles: Set[File],
+                targetBaseDir: File,
+                classpath: Seq[File],
+                log: Logger,
+                packageName: Option[String],
+                listenerOpt: Boolean,
+                visitorOpt: Boolean) = {
     val targetDir = packageName.map{_.split('.').foldLeft(targetBaseDir){_/_}}.getOrElse(targetBaseDir)
     val baseArgs = Seq("-cp", Path.makeString(classpath), "org.antlr.v4.Tool", "-o", targetDir.toString)
     val packageArgs = packageName.toSeq.flatMap{p => Seq("-package",p)}
@@ -55,6 +56,7 @@ object Antlr4Plugin extends Plugin {
   val antlr4Settings = inConfig(Antlr4)(Seq(
     sourceDirectory <<= (sourceDirectory in Compile) {_ / "antlr4"},
     javaSource <<= (sourceManaged in Compile).apply(_ / "antlr4"),
+    antlr4OutputDir <<= sourceManaged in Compile,
     managedClasspath <<= (configuration, classpathTypes, update) map Classpaths.managedJars,
     antlr4Version := "4.5.3",
     antlr4Generate <<= antlr4GeneratorTask,
@@ -74,3 +76,4 @@ object Antlr4Plugin extends Plugin {
     libraryDependencies <+= (antlr4RuntimeDependency in Antlr4)
   )
 }
+
