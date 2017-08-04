@@ -4,12 +4,9 @@ This plugin provides an ability to run antlr4 when compiling in sbt 0.13.
 
 ## How to use
 
-Put your .g4 files in `src/main/antlr4` directory and make `project/sbt-antlr4.sbt`
-file with the following contents:
+Put your .g4 files in `src/main/antlr4` directory and put Antlr4Plugin.scala in `project/`:
 
-    addSbtPlugin("com.simplytyped" % "sbt-antlr4" % "0.7.11")
-
-And, add `antlr4Settings` to your `build.sbt` file.
+Then, add `antlr4Settings` to your `build.sbt` file.
 
     antlr4Settings
 
@@ -30,7 +27,7 @@ Set output directory for generated java classes (eg parser):
     default directory: projectpath/target/resolution-cache/scala_{ver}/src_managed/main
 
 
-    antlr4OutputDir in Antlr4 := new File("/yourprojectpath/where/You/want/")
+    antlr4OutputDir in Antlr4 := new File("projectpath/where/You/want/")
 
 And if You want put it to projectpath/src/main/java:
 
