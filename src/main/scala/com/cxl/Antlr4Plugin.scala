@@ -55,7 +55,6 @@ object Antlr4Plugin extends Plugin {
 
   val antlr4Settings = inConfig(Antlr4)(Seq(
     sourceDirectory <<= (sourceDirectory in Compile) {_ / "antlr4"},
-    javaSource <<= (sourceManaged in Compile).apply(_ / "antlr4"),
     antlr4OutputDir <<= sourceManaged in Compile,
     managedClasspath <<= (configuration, classpathTypes, update) map Classpaths.managedJars,
     antlr4Version := "4.5.3",
@@ -68,10 +67,10 @@ object Antlr4Plugin extends Plugin {
     antlr4GenVisitor := false
   )) ++ Seq(
     ivyConfigurations += Antlr4,
-    managedSourceDirectories in Compile <+= (javaSource in Antlr4),
     sourceGenerators in Compile <+= (antlr4Generate in Antlr4),
+    cleanFiles += (antlr4PackageName in Antlr4).value.map{_.split('.')
+      .foldLeft((antlr4OutputDir in Antlr4).value){_/_}}.getOrElse((antlr4OutputDir in Antlr4).value),
     watchSources <++= sourceDirectory map {path => (path ** "*.g4").get},
-    cleanFiles <+= (javaSource in Antlr4),
     libraryDependencies <+= (antlr4BuildDependency in Antlr4),
     libraryDependencies <+= (antlr4RuntimeDependency in Antlr4)
   )
